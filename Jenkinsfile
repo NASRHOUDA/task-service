@@ -171,16 +171,18 @@ pipeline {
         }
 
         stage('Prepare Trivy Cache') {
-            steps {
-                sh '''
-                    docker volume create trivy-cache-task
-                    docker run --rm \
-                      -v trivy-cache-task:/root/.cache/trivy \
-                      aquasec/trivy:latest image \
-                      --download-db-only --timeout 5m
-                '''
-            }
+    steps {
+        retry(3) {
+            sh '''
+                docker volume create trivy-cache-task
+                docker run --rm \
+                  -v trivy-cache-task:/root/.cache/trivy \
+                  aquasec/trivy:latest image \
+                  --download-db-only --timeout 5m
+            '''
         }
+    }
+}
 
         stage('Trivy Image Scan') {
             steps {
