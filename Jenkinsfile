@@ -19,7 +19,7 @@ pipeline {
                 git branch: 'main',
                     url: 'https://github.com/NASRHOUDA/task-service.git',
                     credentialsId: 'github-token'
-                echo '📦 Code récupéré depuis GitHubb'
+                echo '📦 Code récupéré depuis GitHub'
             }
         }
 
