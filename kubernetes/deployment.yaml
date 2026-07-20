@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: task-service
-  namespace: taskmanager
   labels:
     app: task-service
 spec:
@@ -45,24 +44,36 @@ spec:
             app: task-service
       containers:
       - name: task-service
-        image: houdanasr/task-service:7
+        image: houdanasr/task-service:8
         ports:
         - containerPort: 5003
         env:
         - name: PORT
           value: "5003"
         - name: DB_HOST
-          value: taskmanager-db-rw
+          valueFrom:
+            secretKeyRef:
+              name: task-db-secrets
+              key: DB_HOST
         - name: DB_PORT
-          value: "5432"
+          valueFrom:
+            secretKeyRef:
+              name: task-db-secrets
+              key: DB_PORT
         - name: DB_NAME
-          value: taskmanager
+          valueFrom:
+            secretKeyRef:
+              name: task-db-secrets
+              key: DB_NAME
         - name: DB_USER
-          value: postgres
+          valueFrom:
+            secretKeyRef:
+              name: task-db-secrets
+              key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: task-service-secrets
+              name: task-db-secrets
               key: DB_PASSWORD
         - name: JWT_SECRET
           valueFrom:

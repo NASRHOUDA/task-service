@@ -24,7 +24,6 @@ const defineTaskModel = (sequelize) => {
       userId: {
         type: DataTypes.UUID,
         allowNull: false,
-        references: { model: "Users", key: "id" },
       },
       createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
       updatedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
@@ -43,10 +42,6 @@ const defineTaskModel = (sequelize) => {
       },
     }
   );
-
-  Task.associate = (models) => {
-    Task.belongsTo(models.User, { foreignKey: "userId", onDelete: "CASCADE" });
-  };
 
   return Task;
 };
