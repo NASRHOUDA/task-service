@@ -1,5 +1,5 @@
 const validateCreateTask = (req, res, next) => {
-  const { title, description, priority, dueDate } = req.body;
+  const { title, description, priority, deadline } = req.body;
 
   if (!title || typeof title !== "string" || title.trim() === "") {
     console.warn(`Validation failed: Title is required and must be a string`);
@@ -21,7 +21,7 @@ const validateCreateTask = (req, res, next) => {
     return res.status(400).json({ error: "Priority must be low, medium, or high" });
   }
 
-  if (dueDate && Number.isNaN(Date.parse(dueDate))) {
+  if (deadline && Number.isNaN(Date.parse(deadline))) {
     console.warn(`Validation failed: Invalid due date format`);
     return res.status(400).json({ error: "Invalid due date format" });
   }
@@ -30,7 +30,7 @@ const validateCreateTask = (req, res, next) => {
 };
 
 const validateUpdateTask = (req, res, next) => {
-  const { title, status, priority, dueDate } = req.body;
+  const { title, status, priority, deadline } = req.body;
 
   if (title && (typeof title !== "string" || title.trim() === "")) {
     console.warn(`Validation failed: Title must be a non-empty string`);
@@ -47,7 +47,7 @@ const validateUpdateTask = (req, res, next) => {
     return res.status(400).json({ error: "Priority must be low, medium, or high" });
   }
 
-  if (dueDate && Number.isNaN(Date.parse(dueDate))) {
+  if (deadline && Number.isNaN(Date.parse(deadline))) {
     console.warn(`Validation failed: Invalid due date format`);
     return res.status(400).json({ error: "Invalid due date format" });
   }

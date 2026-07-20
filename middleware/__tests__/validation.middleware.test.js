@@ -18,7 +18,7 @@ describe("Validation Middleware", () => {
         title: "Test Task",
         description: "Test Description",
         priority: "high",
-        dueDate: "2026-12-31T23:59:59Z",
+        deadline: "2026-12-31T23:59:59Z",
       };
 
       validateCreateTask(req, res, next);
@@ -96,8 +96,8 @@ describe("Validation Middleware", () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    test("should fail if dueDate is invalid", () => {
-      req.body = { title: "Test", dueDate: "invalid-date" };
+    test("should fail if deadline is invalid", () => {
+      req.body = { title: "Test", deadline: "invalid-date" };
 
       validateCreateTask(req, res, next);
 
@@ -204,8 +204,8 @@ describe("Validation Middleware", () => {
       });
     });
 
-    test("should fail if dueDate is invalid", () => {
-      req.body = { dueDate: "invalid-date" };
+    test("should fail if deadline is invalid", () => {
+      req.body = { deadline: "invalid-date" };
 
       validateUpdateTask(req, res, next);
 
@@ -214,8 +214,8 @@ describe("Validation Middleware", () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    test("should accept valid dueDate", () => {
-      req.body = { dueDate: "2026-12-31T23:59:59Z" };
+    test("should accept valid deadline", () => {
+      req.body = { deadline: "2026-12-31T23:59:59Z" };
 
       validateUpdateTask(req, res, next);
 
