@@ -120,13 +120,13 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "rate(container_cpu_usage_seconds_total{namespace=\"microservices\", pod=~\"task-service.*\"}[5m]) * 100",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"microservices\", pod=~\"task-service.*\", container!=\"\", container!=\"POD\"}[5m])) by (pod) * 100",
               "legendFormat": "{{pod}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "task-service \u2014 CPU (%)",
+          "title": "task-service — CPU (%)",
           "type": "timeseries"
         },
         {
@@ -215,13 +215,13 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "container_memory_usage_bytes{namespace=\"microservices\", pod=~\"task-service.*\"} / 1024 / 1024",
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"microservices\", pod=~\"task-service.*\", container!=\"\", container!=\"POD\"}) by (pod) / 1024 / 1024",
               "legendFormat": "{{pod}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "task-service \u2014 RAM (MB)",
+          "title": "task-service — RAM (MB)",
           "type": "timeseries"
         },
         {
@@ -274,11 +274,7 @@ data:
                 "steps": [
                   {
                     "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
+                    "value": null
                   }
                 ]
               }
@@ -309,13 +305,13 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "task_overdue_current",
-              "legendFormat": "taches en retard",
+              "expr": "sum(rate(http_request_duration_seconds_count{app=\"task-service\", status_code=~\"5..\"}[5m])) by (route)",
+              "legendFormat": "{{route}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "task-service \u2014 Taches en retard (gauge)",
+          "title": "task-service — Erreurs 5xx par route (/s)",
           "type": "timeseries"
         },
         {
@@ -347,7 +343,7 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 6,
             "w": 8,
             "x": 0,
             "y": 7
@@ -374,7 +370,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "task-service \u2014 Logs erreurs",
+          "title": "task-service — Logs erreurs",
           "type": "stat"
         },
         {
@@ -385,7 +381,41 @@ data:
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
               },
               "mappings": [],
               "thresholds": {
@@ -393,54 +423,46 @@ data:
                 "steps": [
                   {
                     "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "yellow",
-                    "value": 30
-                  },
-                  {
-                    "color": "red",
-                    "value": 50
+                    "value": null
                   }
                 ]
-              }
+              },
+              "unit": "s"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 6,
             "w": 8,
             "x": 8,
             "y": 7
           },
           "id": 5,
           "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "textMode": "auto",
-            "wideLayout": true
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
           },
+          "pluginVersion": "12.3.1",
           "targets": [
             {
               "editorMode": "code",
-              "expr": "task_overdue_current",
-              "legendFormat": "taches en retard",
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{app=\"task-service\"}[5m])) by (le, route))",
+              "legendFormat": "{{route}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "task-service \u2014 Alerte: taches en retard (seuil)",
-          "type": "stat"
+          "title": "task-service — Latence p95 par route",
+          "type": "timeseries"
         },
         {
           "datasource": {
@@ -457,25 +479,25 @@ data:
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
+                    "color": "green",
                     "value": 0
                   },
                   {
                     "color": "yellow",
-                    "value": 0.7
+                    "value": 1
                   },
                   {
-                    "color": "green",
-                    "value": 0.9
+                    "color": "red",
+                    "value": 5
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "percent"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 6,
             "w": 8,
             "x": 16,
             "y": 7
@@ -499,13 +521,13 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "(sum(rate(task_completed_total[1h])) OR on() vector(0)) / (sum(rate(task_created_total[1h])) OR on() vector(1))",
-              "legendFormat": "ratio",
+              "expr": "100 * sum(rate(http_request_duration_seconds_count{app=\"task-service\", status_code=~\"5..\"}[5m])) / sum(rate(http_request_duration_seconds_count{app=\"task-service\"}[5m]))",
+              "legendFormat": "taux erreur %",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "task-service \u2014 Ratio completion (completed/created)",
+          "title": "task-service — Alerte: taux erreur 5xx (%)",
           "type": "stat"
         }
       ],
@@ -528,5 +550,5 @@ data:
       "timezone": "browser",
       "title": "task-service - Metrics & Logs",
       "uid": "task-service-dashboard",
-      "version": 1
+      "version": 2
     }
