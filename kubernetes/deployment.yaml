@@ -45,7 +45,7 @@ spec:
             app: task-service
       containers:
       - name: task-service
-        image: houdanasr/task-service:10
+        image: houdanasr/task-service:9
         ports:
         - containerPort: 5003
         env:
